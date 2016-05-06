@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.model.Claim;
 import com.model.Consumer;
 import com.model.Status;
+import com.userregistration.component.IClaimSearchServiceDao;
 import com.userregistration.component.IConsumerServiceDao;
 
 @RestController
@@ -21,6 +23,8 @@ import com.userregistration.component.IConsumerServiceDao;
 public class ConsumerController {
 	@Autowired
 	private IConsumerServiceDao personService;
+	@Autowired
+	private IClaimSearchServiceDao claimService;
 	
 	@RequestMapping(value="/person",produces=MediaType.APPLICATION_XML_VALUE)
 	public Consumer getPersonDetail(@RequestParam(value = "id",required = false,
@@ -62,6 +66,18 @@ public class ConsumerController {
 
 		boolean flag = personService.deletedAddedUser(id);
 		return new Status(flag, "Deleted Successfully");
+	}
+	
+	/**
+	 * Claim Search service
+	 */
+	@RequestMapping(value="/claimSearch",produces=MediaType.APPLICATION_JSON_VALUE)
+	public Claim getClaimDetailJson(@RequestParam(value = "id",required = false,
+	                                                    defaultValue = "" +
+	                                                    		"0") Integer id) throws ClassNotFoundException, IOException, SQLException {
+		Claim p = claimService.getClaimDetail(id);
+		System.out.println("  **** id *** "+id);
+		return p;
 	}
 	
 	
