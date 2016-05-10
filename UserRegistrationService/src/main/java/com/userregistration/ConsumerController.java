@@ -109,7 +109,7 @@ public class ConsumerController {
 	                                                    defaultValue = "" +
 	                                                    		"0") Integer id) throws ClassNotFoundException, IOException, SQLException {
 		Claim p = claimService.getClaimDetail(id);
-		System.out.println("  **** id *** "+id);
+		
 		return p;
 	}
 	
