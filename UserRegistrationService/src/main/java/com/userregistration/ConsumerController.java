@@ -47,25 +47,58 @@ public class ConsumerController {
 	        System.out.println("Consumes");
 	}
 	@RequestMapping(value="/addnewuser",method=RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Status addNewUser(@RequestBody Consumer consumerDetails) throws IOException, SQLException {
+	public @ResponseBody Status addNewUser(@RequestBody Consumer consumerDetails)  {
 
-		int uniqueIdentifierNum = personService.addNewUser(consumerDetails);
+		int uniqueIdentifierNum=-1;
+		try {
+			uniqueIdentifierNum = personService.addNewUser(consumerDetails);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println("The unique integer value"+ uniqueIdentifierNum);
 		return new Status(uniqueIdentifierNum, "Added Successfully");
 	}
 	
 	@RequestMapping(value="/modifyaddeduser",method=RequestMethod.PUT,consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Status modifyAddedUser(@RequestBody Consumer consumerDetails) throws IOException, SQLException {
+	public @ResponseBody Status modifyAddedUser(@RequestBody Consumer consumerDetails) {
 
-		boolean flag = personService.modifyAddedUser(consumerDetails);
+		boolean flag = false;
+		try {
+			flag = personService.modifyAddedUser(consumerDetails);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return new Status(flag, "Updated Successfully");
 	}
 	
 	@RequestMapping(value="/deleteuser",method=RequestMethod.DELETE,consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Status deleteuser(@RequestParam Integer id) throws IOException, SQLException {
+	public @ResponseBody Status deleteuser(@RequestParam Integer id) {
 
-		boolean flag = personService.deletedAddedUser(id);
-		return new Status(flag, "Deleted Successfully");
+		boolean flag = false;
+		String message = null;
+		try {
+			flag = personService.deletedAddedUser(id);
+			if (flag){
+				message = "Deleted Successfully";
+			}else{
+				message = "No Record Found";
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new Status(flag, message);
 	}
 	
 	/**
