@@ -93,11 +93,11 @@ public class ConsumerServiceImpl implements IConsumerServiceDao {
 		Connection con = AccessDBConnection.getDbCon();
 		PreparedStatement createPlayer = con.prepareStatement("DELETE FROM CONSUMERS WHERE CONSUMERID=?");
         createPlayer.setInt(1, consumerId);
-		createPlayer.execute();
-
-        if(createPlayer.execute()==true){
-        	deletedFlag = true;
-        }
+        int row = createPlayer.executeUpdate();
+		System.out.println("Row number" + row);
+		if(row!=0){
+			deletedFlag= true;
+	    }
 		return deletedFlag;
 	}
 }
