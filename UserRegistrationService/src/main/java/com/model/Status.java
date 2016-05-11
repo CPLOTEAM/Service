@@ -3,8 +3,10 @@ package com.model;
 public class Status {
 
 	private int uniqueIdentifierId;
+	private int code;
 	private boolean flag;
 	private String message;
+	
 
 	public Status(boolean flag, String message) {
 		this.flag = flag;
@@ -15,7 +17,14 @@ public class Status {
 		this.uniqueIdentifierId = code;
 		this.message = message;
 	}
-
+	
+	public Status(int uniqueIdentifierId, int code, boolean flag, String message) {
+		this.uniqueIdentifierId = uniqueIdentifierId;
+		this.code = code;
+		this.flag = flag;
+		this.message = message;
+	}
+	
 	public boolean isFlag() {
 		return flag;
 	}
@@ -38,5 +47,13 @@ public class Status {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public int getCode() {
+		return code;
+	}
+
+	public void setCode(int code) {
+		this.code = code;
 	}
 }

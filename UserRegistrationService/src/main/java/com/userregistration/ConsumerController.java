@@ -1,22 +1,26 @@
 package com.userregistration;
 
+import com.model.Claim;
+import com.model.Consumer;
+import com.model.Status;
+import com.userregistration.component.IClaimSearchServiceDao;
+import com.userregistration.component.IConsumerServiceDao;
+
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.model.Claim;
-import com.model.Consumer;
-import com.model.Status;
-import com.userregistration.component.IClaimSearchServiceDao;
-import com.userregistration.component.IConsumerServiceDao;
 
 @RestController
 @RequestMapping("/data")
@@ -47,40 +51,47 @@ public class ConsumerController {
 	        System.out.println("Consumes");
 	}
 	@RequestMapping(value="/addnewuser",method=RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Status addNewUser(@RequestBody Consumer consumerDetails)  {
+	public @ResponseBody Status addNewUser(@RequestBody Consumer consumerDetails) throws IOException, SQLException  {
 
 		int uniqueIdentifierNum=-1;
 		try {
 			uniqueIdentifierNum = personService.addNewUser(consumerDetails);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new IOException();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SQLException("Message" + e.getMessage());
 		}
-		System.out.println("The unique integer value"+ uniqueIdentifierNum);
-		return new Status(uniqueIdentifierNum, "Added Successfully");
+		return new Status(uniqueIdentifierNum,0, true, "Added Successfully");
 	}
 	
 	@RequestMapping(value="/modifyaddeduser",method=RequestMethod.PUT,consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Status modifyAddedUser(@RequestBody Consumer consumerDetails) {
+	public @ResponseBody Status modifyAddedUser(@RequestBody Consumer consumerDetails) throws IOException, SQLException {
 
 		boolean flag = false;
+		int id = consumerDetails.getConsumerId();
+		String message = null;
 		try {
 			flag = personService.modifyAddedUser(consumerDetails);
+			if (flag){
+				message = "Updated Successfully";
+			}else{
+				message = "No Record Found";
+				id = -1;
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new IOException();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SQLException("Message" + e.getMessage());
 		}
-		return new Status(flag, "Updated Successfully");
+		return new Status(id, 0, flag, message);
 	}
 	
 	@RequestMapping(value="/deleteuser",method=RequestMethod.DELETE,consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Status deleteuser(@RequestParam Integer id) {
+	public @ResponseBody Status deleteuser(@RequestParam Integer id) throws IOException, SQLException {
 
 		boolean flag = false;
 		String message = null;
@@ -93,12 +104,12 @@ public class ConsumerController {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new IOException();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SQLException("Message" + e.getMessage());
 		}
-		return new Status(flag, message);
+		return new Status(id, 0, flag, message);
 	}
 	
 	/**
@@ -113,5 +124,13 @@ public class ConsumerController {
 		return p;
 	}
 	
-	
+	@ExceptionHandler(Exception.class)
+	public Status myError(HttpServletRequest request, Exception exception) {
+		Status error=new Status(0, null);
+		error.setUniqueIdentifierId(-1);
+		error.setFlag(false);
+	    error.setCode(HttpStatus.BAD_REQUEST.value());
+	    error.setMessage(exception.getLocalizedMessage());
+	    return error;
+	}
 }
