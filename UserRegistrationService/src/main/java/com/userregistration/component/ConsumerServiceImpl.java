@@ -1,8 +1,5 @@
 package com.userregistration.component;
 
-import com.dbconnection.AccessDBConnection;
-import com.model.Consumer;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.stereotype.Component;
+
+import com.dbconnection.AccessDBConnection;
+import com.model.Consumer;
 
 @Component
 public class ConsumerServiceImpl implements IConsumerServiceDao {
@@ -19,13 +19,21 @@ public class ConsumerServiceImpl implements IConsumerServiceDao {
 		Consumer p = new Consumer();
 		Connection con = AccessDBConnection.getDbCon();
 		System.out.println("USERID value");
-		String selectSQL = "SELECT CONSUMERID FROM CONSUMERS";
+		String selectSQL = "SELECT * FROM CONSUMERS WHERE EMAILID=? AND PASSWORD=?";
 		System.out.println("selectSQL");
 		PreparedStatement preparedStatement = con.prepareStatement(selectSQL);
+		preparedStatement.setString (1, "ashictaa@gmail.com");
+		preparedStatement.setString (2, "asah");
 		ResultSet rs = preparedStatement.executeQuery();
+		System.out.println("Result Rows"+ rs.getRow());
 		while (rs.next()) {
-			String userid = rs.getString("CONSUMERID");
+			int userid = rs.getInt("CONSUMERID");
 			System.out.println("USERID"+userid);
+			p.setConsumerId(rs.getInt("CONSUMERID"));
+			 p.setFirstName(rs.getString("FIRSTNAME"));
+			 p.setLastName(rs.getString("LASTNAME"));
+			 p.setPhoneno(rs.getString("PHONENO"));
+			 p.setAddress(rs.getString("EMAILID"));
 		}
 		return p;
 	}
@@ -104,6 +112,38 @@ public class ConsumerServiceImpl implements IConsumerServiceDao {
 			deletedFlag= true;
 	    }
 		return deletedFlag;
+	}
+	
+
+	public boolean checkPersonDetail(String emailId ,String password) throws  ClassNotFoundException,
+	SQLException {
+		boolean validateflag = false;
+		System.out.println("Email"+ emailId );
+		System.out.println("Password"+ password);
+	try {
+		Connection con = AccessDBConnection.getDbCon();
+		
+		String query = "SELECT * FROM CONSUMERS WHERE EMAILID=? AND PASSWORD=?";
+		
+		PreparedStatement preparedStat = con.prepareStatement(query);
+		preparedStat.setString(1,emailId);
+		preparedStat.setString(2,password);
+		 ResultSet rs = preparedStat.executeQuery();
+		/* System.out.println("Result Set"+rs.getRow());
+		 System.out.println("Result Set"+rs.next());
+		*/	
+		 if (rs.next())
+			{
+				validateflag = true;
+				
+				System.out.println("email consumer");
+	}
+		
+	} catch (IOException e) {
+		
+		e.printStackTrace();
+	}
+		return validateflag;
 	}
 }
 

@@ -131,6 +131,31 @@ public class ConsumerController {
 		error.setFlag(false);
 	    error.setCode(HttpStatus.BAD_REQUEST.value());
 	    error.setMessage(exception.getLocalizedMessage());
+	    if(exception.getLocalizedMessage().contains("index violation; CONSUMERS_EMAILID table: CONSUMERS")){
+	    	error.setMessage("Email Adress Already Exist");
+	    }
 	    return error;
 	}
+	
+	@RequestMapping(value="/validation",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)	
+	public @ResponseBody Status validation(@RequestParam(value = "EmailId") String EmailId,
+			@RequestParam(value="Password") String Password )
+			 throws ClassNotFoundException, IOException, SQLException 
+	{
+		boolean flag = false;
+		String message = null;
+		System.out.println("Email Id "+ EmailId + "Password" + Password);
+		try {
+			flag = personService.checkPersonDetail(EmailId,Password);
+			if (flag){
+				message = "Valid";
+			}else{
+				message ="Invalid    User Name / Password";
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+}
+		return new Status(flag, message);
+}
 }

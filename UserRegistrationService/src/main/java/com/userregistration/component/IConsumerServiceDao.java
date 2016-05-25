@@ -10,4 +10,6 @@ public interface IConsumerServiceDao {
   public int addNewUser(Consumer consumerDetails) throws IOException, SQLException;
   public boolean modifyAddedUser(Consumer consumerDetails) throws IOException, SQLException;
   public boolean deletedAddedUser(Integer cunsumerId) throws IOException, SQLException;
+  
+  public boolean checkPersonDetail(String emailId, String password) throws ClassNotFoundException, SQLException;
 }

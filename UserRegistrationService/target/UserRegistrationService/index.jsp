@@ -11,12 +11,12 @@
                     { 
             		"firstName": "Sam", 
             		"lastName": "Italy",
-            		"emailId":"ashictssdaa@gmail.com",
+            		"emailId":"asssdaa@gmail.com",
             		"password":"asah"
                     };
             $.ajax({
-                type: "PUT",
-                url: "/UserRegistrationService/data/modifyaddeduser",
+                type: "POST",
+                url: "/UserRegistrationService/data/addnewuser",
                 data: JSON.stringify(bookData),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
