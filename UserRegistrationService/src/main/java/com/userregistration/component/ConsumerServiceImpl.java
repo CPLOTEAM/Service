@@ -39,6 +39,7 @@ public class ConsumerServiceImpl implements IConsumerServiceDao {
 	}
 
 	public int addNewUser(Consumer consumerDetails) throws IOException, SQLException {
+		
 		Connection con = AccessDBConnection.getDbCon();
 
 		String query = "insert into CONSUMERS (" 
@@ -66,6 +67,7 @@ public class ConsumerServiceImpl implements IConsumerServiceDao {
 			SQLException {
 		
 		boolean updatedFlag = false;
+	
 		Connection con = AccessDBConnection.getDbCon();
 
 		String query = "UPDATE CONSUMERS SET FIRSTNAME = ?, LASTNAME = ?," +
@@ -92,6 +94,8 @@ public class ConsumerServiceImpl implements IConsumerServiceDao {
 			    System.out.println("Value"+updatedFlag);
 			    ps.close();
 		return updatedFlag;
+		
+					
 	}
 
 	public boolean deletedAddedUser(Integer consumerId) throws IOException,
@@ -113,7 +117,6 @@ public class ConsumerServiceImpl implements IConsumerServiceDao {
 	    }
 		return deletedFlag;
 	}
-	
 
 	public boolean checkPersonDetail(String emailId ,String password) throws  ClassNotFoundException,
 	SQLException {
@@ -132,7 +135,8 @@ public class ConsumerServiceImpl implements IConsumerServiceDao {
 		/* System.out.println("Result Set"+rs.getRow());
 		 System.out.println("Result Set"+rs.next());
 		*/	
-		 if (rs.next())
+		
+		if (rs.next())
 			{
 				validateflag = true;
 				
@@ -145,5 +149,35 @@ public class ConsumerServiceImpl implements IConsumerServiceDao {
 	}
 		return validateflag;
 	}
+
+
+	public boolean registercheck(Consumer consumerdetails) throws SQLException {
+	
+	// TODO Auto-generated method stub
+	boolean registerflag = false;
+	System.out.println("Email==>"+consumerdetails.getEmailId());
+
+	try {
+		Connection con = AccessDBConnection.getDbCon();
+		PreparedStatement H = con.prepareStatement("select * FROM Consumers WHERE EmailId='"+consumerdetails.getEmailId()+"'");
+		 ResultSet rs = H.executeQuery();
+		 if (!rs.next())
+			{
+				registerflag = true;
+												
+			}
+			else
+			{
+				registerflag = false;
+			}
+	}
+			catch(Exception e){
+				
+				e.printStackTrace();
+			}
+	return registerflag;
 }
+
+}
+
 

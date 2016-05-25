@@ -1,11 +1,5 @@
 package com.userregistration;
 
-import com.model.Claim;
-import com.model.Consumer;
-import com.model.Status;
-import com.userregistration.component.IClaimSearchServiceDao;
-import com.userregistration.component.IConsumerServiceDao;
-
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -21,6 +15,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.model.Claim;
+import com.model.Consumer;
+import com.model.Status;
+import com.userregistration.component.IClaimSearchServiceDao;
+import com.userregistration.component.IConsumerServiceDao;
 
 @RestController
 @RequestMapping("/data")
@@ -63,7 +63,7 @@ public class ConsumerController {
 			// TODO Auto-generated catch block
 			throw new SQLException("Message" + e.getMessage());
 		}
-		return new Status(uniqueIdentifierNum,0, true, "Added Successfully");
+		return new Status(uniqueIdentifierNum,0, true, "Registration Successful");
 	}
 	
 	@RequestMapping(value="/modifyaddeduser",method=RequestMethod.PUT,consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
@@ -89,6 +89,7 @@ public class ConsumerController {
 		}
 		return new Status(id, 0, flag, message);
 	}
+	
 	
 	@RequestMapping(value="/deleteuser",method=RequestMethod.DELETE,consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody Status deleteuser(@RequestParam Integer id) throws IOException, SQLException {
@@ -120,23 +121,10 @@ public class ConsumerController {
 	                                                    defaultValue = "" +
 	                                                    		"0") Integer id) throws ClassNotFoundException, IOException, SQLException {
 		Claim p = claimService.getClaimDetail(id);
-		System.out.println("  **** id *** "+id);
+		
 		return p;
 	}
-	
-	@ExceptionHandler(Exception.class)
-	public Status myError(HttpServletRequest request, Exception exception) {
-		Status error=new Status(0, null);
-		error.setUniqueIdentifierId(-1);
-		error.setFlag(false);
-	    error.setCode(HttpStatus.BAD_REQUEST.value());
-	    error.setMessage(exception.getLocalizedMessage());
-	    if(exception.getLocalizedMessage().contains("index violation; CONSUMERS_EMAILID table: CONSUMERS")){
-	    	error.setMessage("Email Adress Already Exist");
-	    }
-	    return error;
-	}
-	
+
 	@RequestMapping(value="/validation",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)	
 	public @ResponseBody Status validation(@RequestParam(value = "EmailId") String EmailId,
 			@RequestParam(value="Password") String Password )
@@ -158,4 +146,19 @@ public class ConsumerController {
 }
 		return new Status(flag, message);
 }
+	
+	@ExceptionHandler(Exception.class)
+	public Status myError(HttpServletRequest request, Exception exception) {
+		Status error=new Status(0, null);
+		error.setUniqueIdentifierId(-1);
+		error.setFlag(false);
+	    error.setCode(HttpStatus.BAD_REQUEST.value());
+	    error.setMessage(exception.getLocalizedMessage());
+	    if(exception.getLocalizedMessage().contains("index violation; CONSUMERS_EMAILID table: CONSUMERS")){
+	    	error.setMessage("Email Adress Already Exist");
+	    }
+	    return error;
+	}
 }
+
+
