@@ -144,7 +144,7 @@ public class ConsumerServiceImpl implements IConsumerServiceDao {
 	}
   
 
-public boolean registercheck(Consumer consumerdetails) throws SQLException {
+	public boolean registercheck(Consumer consumerdetails) throws SQLException {
 	
 	// TODO Auto-generated method stub
 	boolean registerflag = false;
