@@ -47,21 +47,35 @@ public class ConsumerController {
 	        System.out.println("Consumes");
 	}
 	@RequestMapping(value="/addnewuser",method=RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Status addNewUser(@RequestBody Consumer consumerDetails)  {
+	public @ResponseBody Status addNewUser(@RequestBody Consumer consumerDetails ) throws IOException{
 
 		int uniqueIdentifierNum=-1;
+		boolean flag = false;
+		String message = null;
+		
 		try {
-			uniqueIdentifierNum = personService.addNewUser(consumerDetails);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			Boolean checkValid = personService.registercheck(consumerDetails);
+			if(checkValid){
+				uniqueIdentifierNum=personService.addNewUser(consumerDetails);
+				message = "Registration Successful ";
+		      }
+			else
+			{
+				message = "Already EmailId exist.";
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("The unique integer value"+ uniqueIdentifierNum);
-		return new Status(uniqueIdentifierNum, "Added Successfully");
-	}
+		return new Status(uniqueIdentifierNum, message);
+				
+		}
+	
+	
+
+	
 	
 	@RequestMapping(value="/modifyaddeduser",method=RequestMethod.PUT,consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody Status modifyAddedUser(@RequestBody Consumer consumerDetails) {
@@ -112,6 +126,30 @@ public class ConsumerController {
 		
 		return p;
 	}
+@RequestMapping(value="/validation",method=RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)	
+	public @ResponseBody Status validation(@RequestParam(value = "EmailId") String EmailId,
+			@RequestParam(value="Password") String Password )
+			 throws ClassNotFoundException, IOException, SQLException 
+	{
+		boolean flag = false;
+		String message = null;
+		try {
+			flag = personService.checkPersonDetail(EmailId,Password);
+			if (flag){
+				message = "success";
+			}else{
+				message = "invalid username and password";
+			}
+		
 	
+		
 	
+		}
+		catch (Exception e) {
 }
+		return new Status(flag, message);
+}	
+}
+	
+
+	
