@@ -1,11 +1,5 @@
 package com.sample;
 
-import com.dbconnection.AccessDBConnection;
-import com.model.Consumer;
-import com.userregistration.ConsumerController;
-import com.userregistration.component.ConsumerServiceImpl;
-import com.userregistration.component.IConsumerServiceDao;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,6 +20,12 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.dbconnection.AccessDBConnection;
+import com.model.Consumer;
+import com.userregistration.ConsumerController;
+import com.userregistration.component.ConsumerServiceImpl;
+import com.userregistration.component.IConsumerServiceDao;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AccessDBConnection.class })
@@ -154,11 +154,6 @@ public class TestRunner extends TestCase {
 				+"FIRSTNAME, LASTNAME, ADDRESS, PHONENO, EMAILID, PASSWORD )"
                     + "values (?, ?, ?, ?, ?, ?)")).thenReturn(mockStatement);
 
-		 Mockito.when(mockStatement.execute()).thenThrow(SQLException.class);
-		/* Mockito.when(mockStatement.getGeneratedKeys()).thenReturn(mockResultSet);
-		 Mockito.when(mockResultSet.next()).thenReturn(false);
-		 Mockito.when(mockResultSet.getInt(1)).thenThrow(SQLException.class);
-		 */
 		 iConsumerServiceDao.addNewUser(consumer);
 			
 			
@@ -198,17 +193,17 @@ public class TestRunner extends TestCase {
 		consumer.setEmailId("ashita@gmail.com");
 		consumer.setPassword("asas");
 		consumer.setPhoneno("asasasasa");
+		consumer.setConsumerId(1);
 		 Mockito.when(mockConnection.prepareStatement("UPDATE CONSUMERS SET FIRSTNAME = ?, LASTNAME = ?," +
 					"ADDRESS=?, PHONENO=?, EMAILID=?, PASSWORD=?   WHERE CONSUMERID = ?")).thenReturn(mockStatement);
-
-		 Mockito.when(mockStatement.execute()).thenThrow(SQLException.class);
+		 
 		/* Mockito.when(mockStatement.getGeneratedKeys()).thenReturn(mockResultSet);
 		 Mockito.when(mockResultSet.next()).thenReturn(false);
 		 Mockito.when(mockResultSet.getInt(1)).thenThrow(SQLException.class);
 		 */
-		 iConsumerServiceDao.addNewUser(consumer);
+		 boolean modifiedVal = iConsumerServiceDao.modifyAddedUser(consumer);
 			
-			
+			System.out.println("Not Added"+modifiedVal );
 		 
 		// Mockito.verify(statement).executeUpdate();
 	}
@@ -249,17 +244,42 @@ public class TestRunner extends TestCase {
 		// Mockito.verify(statement).executeUpdate();
 	}
 	
-	@Test(expected=NumberFormatException.class)
-	public void testIndexOutOfBoundsException() throws SQLException, IOException {
+		@Test
+			public void checkPersonDetailTest() throws Exception {
+				Consumer consumer = new Consumer();
+				consumer.setEmailId("ssarav@gmail.com");
+				consumer.setPassword("aaaa");
+				Mockito.when(mockConnection.prepareStatement("SELECT * FROM CONSUMERS WHERE EMAILID=? AND PASSWORD=?"))
+						.thenReturn(mockStatement);
+
+				Mockito.when(mockStatement.executeQuery()).thenReturn(mockResultSet);
+				Mockito.when(mockResultSet.next()).thenReturn(true);
+				boolean generatedId = iConsumerServiceDao.checkPersonDetail(consumer.getEmailId(), consumer.getPassword());
+			}
 		
-		 Mockito.when(mockConnection.prepareStatement("DELETE FROM CONSUMERS WHERE CONSUMERID=?")).thenReturn(mockStatement);
-		 Mockito.when(mockConnection.prepareStatement("DELETE FROM CLAIMS WHERE CONSUMERID = ?")).thenReturn(mockClaimStatement);
-		 
-		 Mockito.when(mockStatement.executeUpdate()).thenReturn(1);
-		 Mockito.when(mockClaimStatement.executeUpdate()).thenReturn(1);
-		 
-		 boolean generatedId = iConsumerServiceDao.deletedAddedUser(10);
-		 System.out.println("Generated Id"+ generatedId);
-	
-	}
+		@Test
+		public void checkPersonDetailInvalidCase() throws Exception {
+			Consumer consumer = new Consumer();
+			consumer.setEmailId("ssarav@gmail.com");
+			consumer.setPassword("aaaa");
+			Mockito.when(mockConnection.prepareStatement("SELECT * FROM CONSUMERS WHERE EMAILID=? AND PASSWORD=?"))
+					.thenReturn(mockStatement);
+
+			Mockito.when(mockStatement.executeQuery()).thenReturn(mockResultSet);
+			Mockito.when(mockResultSet.next()).thenReturn(false);
+			boolean generatedId = iConsumerServiceDao.checkPersonDetail(consumer.getEmailId(), consumer.getPassword());
+		}
+
+
+			@Test(expected = SQLException.class)
+			public void checkPersonDetailTestFail() throws Exception {
+				Consumer consumer = new Consumer();
+				consumer.setEmailId(null);
+				consumer.setPassword(null);
+				Mockito.when(mockConnection.prepareStatement("SELECT * FROM CONSUMERS WHERE EMAILID=? AND PASSWORD=?"))
+						.thenReturn(mockStatement);
+				iConsumerServiceDao.checkPersonDetail(consumer.getEmailId(), consumer.getPassword());
+
+			}
+
 }

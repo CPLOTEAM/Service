@@ -123,6 +123,8 @@ public class ConsumerServiceImpl implements IConsumerServiceDao {
 		boolean validateflag = false;
 		System.out.println("Email"+ emailId );
 		System.out.println("Password"+ password);
+		
+		password = null;
 	try {
 		Connection con = AccessDBConnection.getDbCon();
 		
